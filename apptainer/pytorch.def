@@ -10,7 +10,7 @@ From: pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel
 
 
 %files
-    ../pytorch/requirements.txt /opt
+    ../requirements.txt /opt
 
 %post
   rm /etc/apt/sources.list.d/cuda.list
