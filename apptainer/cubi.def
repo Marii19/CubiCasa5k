@@ -21,7 +21,7 @@ From: pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel
 
   # Installs the dependencies of the test case
   apt-get -y install libgtk2.0-dev
-  conda install -y python=3.7
+  conda install -y python=3.6.5
   python --version
 
   python -m pip install -r /opt/requirements.txt
