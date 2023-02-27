@@ -1,2 +1,2 @@
 
-python /mnt/code/pytorch/train.py --data-path /mnt/datasets/cubicasa
+python /mnt/code/train.py --data-path /mnt/datasets/cubicasa
