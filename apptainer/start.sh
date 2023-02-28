@@ -22,6 +22,7 @@ mkdir -p "${LOCAL_JOB_DIR}/job_results"
 echo "${LOCAL_JOB_DIR}/job_results"
 
 echo export PYTHONWARNINGS="ignore"
+ls -l
 apptainer run --nv --bind CubiCasa5k:/mnt/code --bind ${DATAPOOL3}/datasets/cubicasa_small:/mnt/datasets/cubicasa --bind ${LOCAL_JOB_DIR}:/mnt/output CubiCasa5k/apptainer/cubi.sif bash /mnt/code/apptainer/train.sh
 # apptainer run --nv ./git/FloorplanTransformation/apptainer/pytorch.sif
 
