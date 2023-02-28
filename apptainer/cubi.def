@@ -1,8 +1,8 @@
 Bootstrap: docker
 #From: pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel
-From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
+#From: nvidia/cuda:11.4.2-cudnn8-devel-ubuntu20.04
 #From: pytorch/pytorch:1.1.0-cuda10.0-cudnn7.5-runtime
-#From: pytorch/pytorch:1.6.0-cuda10.1-cudnn7-runtime
+From: pytorch/pytorch:1.6.0-cuda10.1-cudnn7-runtime
 #From: pytorch/pytorch:1.2-cuda10.0-cudnn7-runtime
 #From: pytorch/pytorch:1.4-cuda10.1-cudnn7-runtime
 #From: pytorch/pytorch:latest
