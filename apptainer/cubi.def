@@ -13,15 +13,16 @@ From: pytorch/pytorch:1.6.0-cuda10.1-cudnn7-runtime
     ../requirements.txt /opt
 
 %post
-  #rm /etc/apt/sources.list.d/cuda.list
-  #rm /etc/apt/sources.list.d/nvidia-ml.list
-  #apt-key del 7fa2af80
+  rm /etc/apt/sources.list.d/cuda.list
+  rm /etc/apt/sources.list.d/nvidia-ml.list
+  apt-key del 7fa2af80
 
   apt-get update
 
   # Installs the dependencies of the test case
-  conda install -y python=3.7
   python --version
+  conda install -y python=3.7
+
 
   python -m pip install -r /opt/requirements.txt
 
