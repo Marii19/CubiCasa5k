@@ -18,10 +18,10 @@ From: pytorch/pytorch:1.9.1-cuda11.1-cudnn8-devel
   apt-key del 7fa2af80
 
   apt-get update
+  apt-get -y install libgtk2.0-dev
 
   # Installs the dependencies of the test case
   python --version
-  conda install -y python=3.7
 
 
   python -m pip install -r /opt/requirements.txt
