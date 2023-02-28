@@ -52,9 +52,9 @@ def train(args, log_dir, writer, logger):
     # Setup Dataloader
     writer.add_text('parameters', str(vars(args)))
     logging.info('Loading data...')
-    train_set = FloorplanSVG(args.data_path, 'train.txt', format='lmdb',
+    train_set = FloorplanSVG(args.data_path, 'train.txt', format='txt',
                              augmentations=aug)
-    val_set = FloorplanSVG(args.data_path, 'val.txt', format='lmdb',
+    val_set = FloorplanSVG(args.data_path, 'val.txt', format='txt',
                            augmentations=DictToTensor())
 
     if args.debug:
