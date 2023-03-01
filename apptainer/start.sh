@@ -13,7 +13,7 @@
 #SBATCH --cpus-per-task=16
 
 #         request from the generic resources 
-#SBATCH --gpus=2
+#SBATCH --gpus=1
 ls -l
 
 source "/etc/slurm/local_job_dir.sh"
