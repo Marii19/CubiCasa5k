@@ -91,15 +91,14 @@ class UncertaintyLoss(Module):
         return w_mse_loss_total
 
     def get_loss(self):
-        print("type: ", type(self.loss_rooms.data), "data: ", self.loss_rooms.data)
-        d = {'total loss': [self.loss.data],
-             'room loss': [self.loss_rooms.data],
-             'icon loss': [self.loss_icons.data],
-             'heatmap loss': [self.loss_heatmap.data],
-             'total loss with variance': [self.loss_var.data],
-             'room loss with variance': [self.loss_rooms_var.data],
-             'icon loss with variance': [self.loss_icons_var.data],
-             'heatmap loss with variance': [self.loss_heatmap_var.data]}
+        d = {'total loss': [self.loss.data.cpu()],
+             'room loss': [self.loss_rooms.data.cpu()],
+             'icon loss': [self.loss_icons.data.cpu()],
+             'heatmap loss': [self.loss_heatmap.data.cpu()],
+             'total loss with variance': [self.loss_var.data.cpu()],
+             'room loss with variance': [self.loss_rooms_var.data.cpu()],
+             'icon loss with variance': [self.loss_icons_var.data.cpu()],
+             'heatmap loss with variance': [self.loss_heatmap_var.data.cpu()]}
         return pd.DataFrame(data=d)
 
     def get_var(self):
