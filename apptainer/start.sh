@@ -10,12 +10,10 @@
 #SBATCH --ntasks=1
 
 #         number of cpus/task (threads/subprocesses). 8 is enough. 16 seems a reasonable max. with 4 GPUs on a 72 core machine.
-#SBATCH --cpus-per-task=1
+#SBATCH --cpus-per-task=16
 
 #         request from the generic resources 
-#SBATCH --gres=gpu:1
-
-#SBATCH --mem=2GB
+#SBATCH --gpus=2
 ls -l
 
 source "/etc/slurm/local_job_dir.sh"
