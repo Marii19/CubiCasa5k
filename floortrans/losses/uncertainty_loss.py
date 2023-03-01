@@ -102,8 +102,8 @@ class UncertaintyLoss(Module):
         return pd.DataFrame(data=d)
 
     def get_var(self):
-        variance = torch.exp(self.log_vars.data)
-        mse_variance = torch.exp(self.log_vars_mse.data)
+        variance = torch.exp(self.log_vars.data).cpu()
+        mse_variance = torch.exp(self.log_vars_mse.data).cpu()
         d = {'room variance': [variance[0]],
              'icon variance': [variance[1]]}
         for i, m in enumerate(mse_variance):
@@ -113,8 +113,8 @@ class UncertaintyLoss(Module):
         return pd.DataFrame(data=d)
     
     def get_s(self):
-        s = self.log_vars.data
-        mse_s = self.log_vars_mse.data
+        s = self.log_vars.data.cpu()
+        mse_s = self.log_vars_mse.data.cpu()
         d = {'room s': [s[0]],
              'icon s': [s[1]]}
         for i, m in enumerate(mse_s):
