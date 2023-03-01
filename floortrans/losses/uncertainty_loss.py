@@ -91,6 +91,7 @@ class UncertaintyLoss(Module):
         return w_mse_loss_total
 
     def get_loss(self):
+        print("type: ", type(self.loss_rooms.data), "data: ", self.loss_rooms.data)
         d = {'total loss': [self.loss.data],
              'room loss': [self.loss_rooms.data],
              'icon loss': [self.loss_icons.data],
