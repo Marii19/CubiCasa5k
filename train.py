@@ -139,6 +139,7 @@ def train(args, log_dir, writer, logger):
             logger.info("No checkpoint found at '{}'".format(args.weights)) 
 
     for epoch in range(start_epoch, args.n_epoch):
+        print("--------------- Epoch number: ", epoch, " ---------------------")
         model.train()
         lossess = []
         losses = pd.DataFrame()
