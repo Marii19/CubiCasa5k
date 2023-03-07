@@ -7,13 +7,13 @@
 #SBATCH --output=%j.out
 
 #         ask slurm to run at most 1 task (slurm task == OS process) which might have subprocesses/threads 
-#SBATCH --ntasks=1
+#SBATCH --ntasks=2
 
 #         number of cpus/task (threads/subprocesses). 8 is enough. 16 seems a reasonable max. with 4 GPUs on a 72 core machine.
 #SBATCH --cpus-per-task=16
 
 #         request from the generic resources 
-#SBATCH --gpus=1
+#SBATCH --gpus=2
 ls -l
 
 source "/etc/slurm/local_job_dir.sh"
