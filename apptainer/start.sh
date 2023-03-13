@@ -32,6 +32,7 @@ tar -cf pytorch_${SLURM_JOB_ID}.tar -C job_results .
 cp pytorch_${SLURM_JOB_ID}.tar ${SLURM_SUBMIT_DIR}/output
 echo "Output dir"
 ls -l ${LOCAL_JOB_DIR}/job_results
+echo "after output"
 
 rm -rf ${LOCAL_JOB_DIR}/job_results
 
