@@ -15,7 +15,7 @@
 #         request from the generic resources 
 #SBATCH --gpus=1
 
-#SBATCH --mem=32G
+#SBATCH --mem=16G
 ls -l
 
 source "/etc/slurm/local_job_dir.sh"
