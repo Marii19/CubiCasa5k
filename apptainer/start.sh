@@ -15,7 +15,7 @@
 #         request from the generic resources 
 #SBATCH --gpus=1
 
-#SBATCH --mem=16G
+#SBATCH --mem=32G
 ls -l
 
 source "/etc/slurm/local_job_dir.sh"
@@ -31,7 +31,7 @@ cd ${LOCAL_JOB_DIR}
 tar -cf pytorch_${SLURM_JOB_ID}.tar -C job_results .
 cp pytorch_${SLURM_JOB_ID}.tar ${SLURM_SUBMIT_DIR}/output
 echo "Output dir"
-ls -l ${LOCAL_JOB_DIR}
+ls -l ${LOCAL_JOB_DIR}/job_results
 
 rm -rf ${LOCAL_JOB_DIR}/job_results
 
