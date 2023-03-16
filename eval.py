@@ -73,7 +73,8 @@ def evaluate(args, log_dir, writer, logger):
 
             score_pol_seg_room.update(label[0], pol_segmentation[0])
             score_pol_seg_icon.update(label[1], pol_segmentation[1])
-            np.save(log_dir+str(segmentation[0].shape[0]), segmentation[0])
+            np.save(log_dir + "/seg_room/" + str(count), segmentation[0])
+            np.save(log_dir + "/seg_room_pol/" + str(count), pol_segmentation[0])
     print_res("Room segmentation", score_seg_room.get_scores(), room_cls, logger)
     print_res("Room polygon segmentation", score_pol_seg_room.get_scores(), room_cls, logger)
     print_res("Icon segmentation", score_seg_icon.get_scores(), icon_cls, logger)
