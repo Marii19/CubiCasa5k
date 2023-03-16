@@ -79,7 +79,6 @@ def process_split(out_path, data_path, split, verbose=True):
     data_enum = tqdm(enumerate(data), desc='Processing example', total=len(data)) if verbose else enumerate(data)
     
     for idx, example in data_enum:
-        print(example)
         boxes = {}
         doors_boxes = []
         windows_boxes = []
