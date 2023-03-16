@@ -62,7 +62,7 @@ def evaluate(args, log_dir, writer, logger):
     score_pol_seg_room = runningScore(12)
     score_pol_seg_icon = runningScore(11)
     os.makedirs(log_dir + "seg_room/", exist_ok=True)
-    os.makedirs(log_dir + "seg_room/", exist_ok=True)
+    os.makedirs(log_dir + "seg_room_pol/", exist_ok=True)
 
     with torch.no_grad():
         for count, val in tqdm(enumerate(data_loader), total=len(data_loader),
