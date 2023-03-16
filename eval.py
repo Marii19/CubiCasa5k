@@ -10,6 +10,7 @@ from floortrans.loaders import FloorplanSVG
 from floortrans.loaders.augmentations import DictToTensor, Compose
 from floortrans.metrics import get_evaluation_tensors, runningScore
 from tqdm import tqdm
+import os
 
 room_cls = ["Background", "Outdoor", "Wall", "Kitchen", "Living Room", "Bedroom", "Bath", "Hallway", "Railing", "Storage", "Garage", "Other rooms"]
 icon_cls = ["Empty", "Window", "Door", "Closet", "Electr. Appl.", "Toilet", "Sink", "Sauna bench", "Fire Place", "Bathtub", "Chimney"]
@@ -60,6 +61,9 @@ def evaluate(args, log_dir, writer, logger):
     score_seg_icon = runningScore(11)
     score_pol_seg_room = runningScore(12)
     score_pol_seg_icon = runningScore(11)
+    os.makedirs(log_dir + "seg_room/", exist_ok=True)
+    os.makedirs(log_dir + "seg_room/", exist_ok=True)
+
     with torch.no_grad():
         for count, val in tqdm(enumerate(data_loader), total=len(data_loader),
                                ncols=80, leave=False):
@@ -73,8 +77,9 @@ def evaluate(args, log_dir, writer, logger):
 
             score_pol_seg_room.update(label[0], pol_segmentation[0])
             score_pol_seg_icon.update(label[1], pol_segmentation[1])
-            np.save(log_dir + "/seg_room/" + str(count), segmentation[0])
-            np.save(log_dir + "/seg_room_pol/" + str(count), pol_segmentation[0])
+            np.save(log_dir + "seg_room/" + str(count), segmentation[0])
+            np.save(log_dir + "seg_room_pol/" + str(count), pol_segmentation[0])
+
     print_res("Room segmentation", score_seg_room.get_scores(), room_cls, logger)
     print_res("Room polygon segmentation", score_pol_seg_room.get_scores(), room_cls, logger)
     print_res("Icon segmentation", score_seg_icon.get_scores(), icon_cls, logger)
