@@ -80,7 +80,7 @@ class FloorplanSVG(Dataset):
         img = torch.tensor(fplan.astype(np.float32))
 
         sample = {'image': img, 'label': label, 'folder': self.folders[index],
-                  'heatmaps': heatmaps, 'scale': coef_width}
+                  'heatmaps': heatmaps, 'scale': coef_width, 'house': house}
 
         return sample
 
