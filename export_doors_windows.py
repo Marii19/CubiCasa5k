@@ -68,13 +68,9 @@ def polygonToArray(polygon, shape, color):
 
 def process_split(out_path, data_path, split, verbose=True):
     split_path = os.path.join(out_path, split)
-    img_path = os.path.join(split_path, 'images')
-    mask_path = os.path.join(split_path, 'masks')
     boxes_path = os.path.join(split_path, 'boxes')
 
     os.makedirs(split_path, exist_ok=True)
-    os.makedirs(img_path, exist_ok=True)
-    os.makedirs(mask_path, exist_ok=True)
     os.makedirs(boxes_path, exist_ok=True)
 
     txt_file = split + '.txt'
