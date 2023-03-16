@@ -83,20 +83,15 @@ def process_split(out_path, data_path, split, verbose=True):
     data_enum = tqdm(enumerate(data), desc='Processing example', total=len(data)) if verbose else enumerate(data)
     
     for idx, example in data_enum:
+        print(example)
         boxes = {}
         doors_boxes = []
         windows_boxes = []
         house = example['house']
-        x, y, z = np.array(example['label']).shape
-        rooms = np.zeros((y, z))
 
         for poly in house.polys['only_doors']:
-            poly_array = polygonToArray(poly, rooms.shape, 255.0)
-            rooms = cv2.bitwise_or(rooms, poly_array)
             doors_boxes.append(list(poly.exterior.coords))
         for poly in house.polys['only_windows']:
-            poly_array = polygonToArray(poly, rooms.shape, 100.0)
-            rooms = cv2.bitwise_or(rooms, poly_array)  
             windows_boxes.append(list(poly.exterior.coords))
 
         boxes["doors"] = doors_boxes
