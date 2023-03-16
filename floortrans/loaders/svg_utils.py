@@ -5,6 +5,17 @@ from skimage.draw import polygon
 from svgpathtools import parse_path
 from logging import warning
 
+import shapely.geometry as geo
+
+
+
+
+def points2polygon(x, y):
+    points = np.array([x, y]).T
+    poly = geo.Polygon(points)
+    return poly
+
+
 
 def get_labels(path, height, width):
     svg = minidom.parse(path)
