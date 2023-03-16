@@ -1,5 +1,5 @@
-import math
 import numpy as np
+from floortrans.loaders import svg_utils as svgu
 from floortrans.loaders.svg_utils import PolygonWall, get_polygon, calc_distance, get_room_number, get_icon, get_icon_number, get_points, get_direction, get_gaussian2D
 from xml.dom import minidom
 from skimage.draw import polygon
@@ -201,71 +201,6 @@ room_name_map = {"Alcove": "Room",
                  "Railing": "Railing",
                  "Background": "Background"}  # Not in data. The default outside label
 
-# room_name_map = {"Alcove": "Background",
-#                  "Attic": "Background",
-#                  "Ballroom": "Background",
-#                  "Bar": "Background",
-#                  "Basement": "Background",
-#                  "Bath": "Background",
-#                  "Bedroom": "Background",
-#                  "Below150cm": "Background",
-#                  "CarPort": "Background",
-#                  "Church": "Background",
-#                  "Closet": "Background",
-#                  "ConferenceRoom": "Background",
-#                  "Conservatory": "Background",
-#                  "Counter": "Background",
-#                  "Den": "Background",
-#                  "Dining": "Background",
-#                  "DraughtLobby": "Background",
-#                  "DressingRoom": "Background",
-#                  "EatingArea": "Background",
-#                  "Elevated": "Background",
-#                  "Elevator": "Background",
-#                  "Entry": "Background",
-#                  "ExerciseRoom": "Background",
-#                  "Garage": "Background",
-#                  "Garbage": "Background",
-#                  "Hall": "Background",
-#                  "HallWay": "Background",
-#                  "HotTub": "Background",
-#                  "Kitchen": "Background",
-#                  "Library": "Background",
-#                  "LivingRoom": "Background",
-#                  "Loft": "Background",
-#                  "Lounge": "Background",
-#                  "MediaRoom": "Background",
-#                  "MeetingRoom": "Background",
-#                  "Museum": "Background",
-#                  "Nook": "Background",
-#                  "Office": "Background",
-#                  "OpenToBelow": "Background",
-#                  "Outdoor": "Background",
-#                  "Pantry": "Background",
-#                  "Reception": "Background",
-#                  "RecreationRoom": "Background",
-#                  "RetailSpace": "Background",
-#                  "Room": "Background",
-#                  "Sanctuary": "Background",
-#                  "Sauna": "Background",
-#                  "ServiceRoom": "Background",
-#                  "ServingArea": "Background",
-#                  "Skylights": "Background",
-#                  "Stable": "Background",
-#                  "Stage": "Background",
-#                  "StairWell": "Background",
-#                  "Storage": "Background",
-#                  "SunRoom": "Background",
-#                  "SwimmingPool": "Background",
-#                  "TechnicalRoom": "Background",
-#                  "Theatre": "Background",
-#                  "Undefined": "Background",
-#                  "UserDefined": "Background",
-#                  "Utility": "Background",
-#                  "Wall": "Wall",
-#                  "Railing": "Background",
-#                  "Background": "Background"}  # Not in data. The default outside label
-
 all_icons = {"Empty": 0,
              "Window": 1,
              "Door": 2,
@@ -427,6 +362,7 @@ class House:
         svg = minidom.parse(path)
         self.walls = np.empty((height, width), dtype=np.uint8)
         self.walls.fill(0)
+        self.only_walls = np.zeros_like(self.walls)
         self.wall_ids = np.empty((height, width), dtype=np.uint8)
         self.wall_ids.fill(0)
         self.icons = np.zeros((height, width), dtype=np.uint8)
@@ -448,6 +384,15 @@ class House:
                                'icons': [],
                                'labels': [],
                                'walls': []}
+        self.door_types = []
+        self.polys = {
+            'doors': [],
+            'icons': [],
+            'labels': [],
+            'walls': [],
+            'only_doors': [],
+            'only_windows': []
+            }
 
         self.icon_areas = []
 
@@ -458,6 +403,7 @@ class House:
                     wall.rr, wall.cc = self._clip_outside(wall.rr, wall.cc)
                     self.wall_objs.append(wall)
                     self.walls[wall.rr, wall.cc] = room_list["Wall"]
+                    self.only_walls[wall.rr, wall.cc] = room_list["Wall"]
                     self.wall_ids[wall.rr, wall.cc] = wall_id
                     self.wall_ends.append(wall.end_points)
 
@@ -468,6 +414,7 @@ class House:
                     wall.rr, wall.cc = self._clip_outside(wall.rr, wall.cc)
                     self.wall_objs.append(wall)
                     self.walls[wall.rr, wall.cc] = room_list["Railing"]
+                    self.only_walls[wall.rr, wall.cc] = room_list["Railing"]
                     self.wall_ids[wall.rr, wall.cc] = wall_id
                     self.wall_ends.append(wall.end_points)
 
@@ -480,6 +427,7 @@ class House:
 
             if e.getAttribute("id") == "Window":
                 X, Y = get_points(e)
+                poly = svgu.points2polygon(X, Y)
                 rr, cc = polygon(X, Y)
                 cc, rr = self._clip_outside(cc, rr)
                 direction = get_direction(X, Y)
@@ -500,6 +448,8 @@ class House:
 
                     door_rep = [[list(point_left), list(point_right)], ['door', 1, 1]]
                     self.representation['doors'].append(door_rep)
+                    self.polys['doors'].append(poly)
+                    self.polys['only_windows'].append(poly)
                 else:
                     up_index = np.argmin(locs[:, 1])
                     up1 = locs[up_index]
@@ -516,13 +466,17 @@ class House:
 
                     door_rep = [[list(point_up), list(point_down)], ['door', 1, 1]]
                     self.representation['doors'].append(door_rep)
+                    self.polys['doors'].append(poly)
+                    self.polys['only_windows'].append(poly)
 
                 self.icons[cc, rr] = 1
                 self.icon_types.append(1)
+                self.door_types.append(1)
 
             if e.getAttribute("id") == "Door":
                 # How to reperesent empty door space
                 X, Y = get_points(e)
+                poly = svgu.points2polygon(X, Y)
                 rr, cc = polygon(X, Y)
                 cc, rr = self._clip_outside(cc, rr)
                 direction = get_direction(X, Y)
@@ -543,6 +497,9 @@ class House:
 
                     door_rep = [[list(point_left), list(point_right)], ['door', 1, 1]]
                     self.representation['doors'].append(door_rep)
+                    self.polys['doors'].append(poly)
+                    self.polys['only_doors'].append(poly)
+
                 else:
                     up_index = np.argmin(locs[:, 1])
                     up1 = locs[up_index]
@@ -559,9 +516,12 @@ class House:
 
                     door_rep = [[list(point_up), list(point_down)], ['door', 1, 1]]
                     self.representation['doors'].append(door_rep)
+                    self.polys['doors'].append(poly)
+                    self.polys['only_doors'].append(poly)
 
                 self.icons[cc, rr] = 2
                 self.icon_types.append(2)
+                self.door_types.append(2)
 
             if "FixedFurniture " in e.getAttribute("class"):
                 num = get_icon_number(e, icon_list)
@@ -569,6 +529,7 @@ class House:
                     rr, cc, X, Y = get_icon(e)
                     # only four corner icons
                     if len(X) == 4:
+                        poly = svgu.points2polygon(X, Y)
                         locs = np.column_stack((X, Y))
                         up_left_index = locs.sum(axis=1).argmin()
                         self.icon_corners['upper_left'].append(locs[up_left_index])
@@ -588,6 +549,7 @@ class House:
 
                         icon_rep = [[up_left, down_right], [icon_name, 1, 1]]
                         self.representation['icons'].append(icon_rep)
+                        self.polys['icons'].append(poly)
 
                         rr, cc = self._clip_outside(rr, cc)
                         self.icon_areas.append(len(rr))
@@ -596,10 +558,12 @@ class House:
 
             if "Space " in e.getAttribute("class"):
                 num = get_room_number(e, room_list)
-                rr, cc = get_polygon(e)
+                X, Y = get_points(e)
+                rr, cc = polygon(X, Y)
                 if len(rr) != 0:
                     rr, cc = self._clip_outside(rr, cc)
                     if len(rr) != 0 and len(cc) != 0:
+                        poly = svgu.points2polygon(X, Y)
                         self.walls[rr, cc] = num
                         self.room_types.append(num)
 
@@ -609,6 +573,7 @@ class House:
                         room_name = e.getAttribute('class').replace('Space ', '').split(' ')[0]
                         room_name = room_name_map[room_name]
                         self.representation['labels'].append([center_box, [room_name, 1, 1]])
+                        self.polys['labels'].append(poly)
 
             # if "Stairs" in e.getAttribute("class"):
                 # for c in e.childNodes:
