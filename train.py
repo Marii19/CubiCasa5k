@@ -406,7 +406,7 @@ if __name__ == '__main__':
                         help='Rescale to 256x256 augmentation.')
     args = parser.parse_args()
 
-    log_dir = args.log_path + '/' + 'train' + '/'
+    log_dir = args.log_path + '/' + time_stamp  + '/'
     writer = SummaryWriter(log_dir)
     logger = logging.getLogger('train')
     logger.setLevel(logging.DEBUG)
