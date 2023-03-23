@@ -355,7 +355,7 @@ icon_name_map = {"Window": "Window",
 
 
 class House:
-    def __init__(self, path, height, width, icon_list=icons_selected, room_list=rooms_selected):
+    def __init__(self, path, height, width, roi, icon_list=icons_selected, room_list=rooms_selected):
         self.height = height
         self.width = width
         shape = height, width
@@ -366,6 +366,7 @@ class House:
         self.wall_ids = np.empty((height, width), dtype=np.uint8)
         self.wall_ids.fill(0)
         self.icons = np.zeros((height, width), dtype=np.uint8)
+        self.roi = roi
         # junction_id = 0
         wall_id = 1
         self.wall_ends = []
@@ -615,20 +616,38 @@ class House:
             else:
                 self.representation['walls'].append([end_points, ['wall', 2, 1]])
 
-
+        # xmin, ymin, w, h = self.roi
+        # self.widths = w
+        # self.height = h
 
     def get_tensor(self):
         heatmaps = self.get_heatmaps()
-        wall_t = np.expand_dims(self.walls, axis=0)
-        icon_t = np.expand_dims(self.icons, axis=0)
+        wall_t = self.walls
+        icon_t = self.icons
+        xmin, ymin, w, h = self.roi
+        xmax, ymax = xmin + w, ymin + h
+        wall_t = wall_t[ymin:ymax, xmin:xmax]
+        icon_t = icon_t[ymin:ymax, xmin:xmax]
+
+        wall_t = np.expand_dims(wall_t, axis=0)
+        icon_t = np.expand_dims(icon_t, axis=0)
+
         tensor = np.concatenate((heatmaps, wall_t, icon_t), axis=0)
 
         return tensor
 
     def get_segmentation_tensor(self):
-        wall_t = np.expand_dims(self.walls, axis=0)
-        icon_t = np.expand_dims(self.icons, axis=0)
+        wall_t = self.walls
+        icon_t = self.icons
+        xmin, ymin, w, h = self.roi
+        xmax, ymax = xmin + w, ymin + h
+        wall_t = wall_t[ymin:ymax, xmin:xmax]
+        icon_t = icon_t[ymin:ymax, xmin:xmax]
+        wall_t = np.expand_dims(wall_t, axis=0)
+
+        icon_t = np.expand_dims(icon_t, axis=0)
         tensor = np.concatenate((wall_t, icon_t), axis=0)
+
 
         return tensor
 
@@ -762,7 +781,15 @@ class House:
         for i, h in enumerate(heatmaps):
             heatmaps[i] = cv2.filter2D(h, -1, kernel)
 
-        return heatmaps
+        xmin, ymin, w, h = self.roi
+        xmax, ymax = xmin + w, ymin + h
+        new_shape = (heatmaps.shape[0], h, w)
+        new_heatmaps = np.zeros(new_shape).astype(np.float64)
+        for idx, heatmap in enumerate(heatmaps):
+            
+            new_heatmap = heatmap[ymin:ymax, xmin:xmax]
+            new_heatmaps[idx] = new_heatmap
+        return new_heatmaps
 
     def _clip_outside(self, rr, cc):
         s = np.column_stack((rr, cc))

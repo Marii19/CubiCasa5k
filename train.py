@@ -71,6 +71,7 @@ def train(args, log_dir, writer, logger):
 
     # Setup Model
     logging.info('Loading model...')
+    print("loading")
     input_slice = [21, 12, 11]
     if args.arch == 'hg_furukawa_original':
         model = get_model(args.arch, 51)
@@ -405,7 +406,7 @@ if __name__ == '__main__':
                         help='Rescale to 256x256 augmentation.')
     args = parser.parse_args()
 
-    log_dir = args.log_path + '/' + time_stamp + '/'
+    log_dir = args.log_path + '/' + 'train' + '/'
     writer = SummaryWriter(log_dir)
     logger = logging.getLogger('train')
     logger.setLevel(logging.DEBUG)

@@ -6,10 +6,12 @@ import cv2
 import numpy as np
 from numpy import genfromtxt
 from floortrans.loaders.house import House
+import os
+import json
 
 
 class FloorplanSVG(Dataset):
-    def __init__(self, data_folder, data_file, is_transform=True,
+    def __init__(self, data_folder, data_file, rois_file, is_transform=True,
                  augmentations=None, img_norm=True, format='txt',
                  original_size=False, lmdb_folder='cubi_lmdb/'):
         self.img_norm = img_norm
@@ -18,8 +20,10 @@ class FloorplanSVG(Dataset):
         self.get_data = None
         self.original_size = original_size
         self.image_file_name = '/F1_scaled.png'
+        self.org_scaled_image_file_name = '/F1_scaled_orig.png'
         self.org_image_file_name = '/F1_original.png'
         self.svg_file_name = '/model.svg'
+        self.roi_file_path = os.path.join(data_folder, rois_file)
 
         if format == 'txt':
             self.get_data = self.get_txt
@@ -33,6 +37,10 @@ class FloorplanSVG(Dataset):
         self.data_folder = data_folder
         # Load txt file to list
         self.folders = genfromtxt(data_folder + data_file, dtype='str')
+
+        with open(self.roi_file_path, 'r') as f:
+            self.rois = json.load(f)
+
 
     def __len__(self):
         """__len__"""
@@ -52,14 +60,18 @@ class FloorplanSVG(Dataset):
     def get_txt(self, index):
         fplan = cv2.imread(self.data_folder + self.folders[index] + self.image_file_name)
         fplan = cv2.cvtColor(fplan, cv2.COLOR_BGR2RGB)  # correct color channels
-        height, width, nchannel = fplan.shape
+        fplan_orig = cv2.imread(self.data_folder + self.folders[index] + self.org_scaled_image_file_name)
+        fplan_orig = cv2.cvtColor(fplan_orig, cv2.COLOR_BGR2RGB)  # correct color channels
+        height, width, nchannel = fplan_orig.shape
         fplan = np.moveaxis(fplan, -1, 0)
 
         # Getting labels for segmentation and heatmaps
-        house = House(self.data_folder + self.folders[index] + self.svg_file_name, height, width)
+        roi = self.rois[self.folders[index]+ '\n']
+        house = House(self.data_folder + self.folders[index] + self.svg_file_name, height, width, roi)
         # Combining them to one numpy tensor
         label = torch.tensor(house.get_segmentation_tensor().astype(np.float32))
         heatmaps = house.get_heatmap_dict()
+
         coef_width = 1
         if self.original_size:
             fplan = cv2.imread(self.data_folder + self.folders[index] + self.org_image_file_name)
@@ -78,6 +90,7 @@ class FloorplanSVG(Dataset):
                 heatmaps[key] = [(int(round(x*coef_width)), int(round(y*coef_height))) for x, y in value]
 
         img = torch.tensor(fplan.astype(np.float32))
+
 
         sample = {'image': img, 'label': label, 'folder': self.folders[index],
                   'heatmaps': heatmaps, 'scale': coef_width, 'house': house}
