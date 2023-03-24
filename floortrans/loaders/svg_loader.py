@@ -91,11 +91,37 @@ class FloorplanSVG(Dataset):
 
         img = torch.tensor(fplan.astype(np.float32))
 
-
+        heatmaps = self.fix_heatmaps(heatmaps, roi, height, width)
         sample = {'image': img, 'label': label, 'folder': self.folders[index],
                   'heatmaps': heatmaps, 'scale': coef_width, 'house': house}
 
         return sample
+
+    def fix_heatmaps(self, heatmaps, roi, height, width):
+        xmin, ymin, w, h = roi
+        xmax, ymax = xmin + w, ymin + h
+        print("x min: ", xmin, "x max: ", xmax, "ymin: ", ymin,"ymax: ",  ymax)
+
+
+        for heatmap in heatmaps:
+            heatmap_mask = np.zeros((height, width))
+            data = heatmaps[heatmap]
+            data_new = []
+            for p in data:
+                y, x = p
+                heatmap_mask[x, y] = 255
+            
+            heatmap_mask = heatmap_mask[ymin:ymax, xmin:xmax]
+            non_zero = np.where(heatmap_mask != 0)
+            if(len(non_zero[0]) != 0):
+                for idx, x in enumerate(non_zero[0]):
+                    new_point = (non_zero[1][idx], x)
+                    data_new.append(new_point)
+            heatmaps[heatmap] = data_new
+
+        return heatmaps
+
+
 
     def get_lmdb(self, index):
         key = self.folders[index].encode()

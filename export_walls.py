@@ -48,27 +48,49 @@ def process_split(out_path, data_path, split, include_railing=True, verbose=True
     for idx, example in data_enum:
 
         house = example['house']
+
+        heatmaps = example["heatmaps"]
         tensor = house.get_tensor()
-        walls = tensor[-3]
-        walls = (walls **2)
-        for i in range(walls.shape[0]):
-            for j in range(walls.shape[1]):
-                if(walls[i][j] != 0):
-                    walls[i][j] += 100
-        print("SUM: ", walls.sum())
+        walls = tensor[-2]
+
+        heatmaps_mask = np.zeros(walls.shape)
+
+        for heatmap in heatmaps:
+            data = heatmaps[heatmap]
+            for p in data:
+                x, y = p
+                heatmaps_mask[y-2:y+2, x-2:x+2] = 255
+
+        cv2.imwrite(split + "heatmap.png", heatmaps_mask)
         
-        # house = example['house']
-        # print("Folder is ", example['folder'])
-        # heatmaps = house.get_heatmaps()
+
+        # walls = (walls **2)
+        # for i in range(walls.shape[0]):
+        #     for j in range(walls.shape[1]):
+        #         if(walls[i][j] != 0):
+        #             walls[i][j] += 100
+        # print("SUM: ", walls.sum())
+
+        # heatmaps_mask = np.zeros(walls.shape)
+        
+        # heatmaps = example['heatmaps']
+        # data = heatmaps[20]
+        # for p in data:
+        #     x, y = p
+        #     heatmaps_mask[x-2:x+2, y-2:y+2] = 255
+        # cv2.imwrite(split + "heatmap.png", heatmaps_mask)
+        # # house = example['house']
+        # # print("Folder is ", example['folder'])
+        # # heatmaps = house.get_heatmaps()
         
   
-        # # walls = house.walls
-        mask = np.zeros(walls.shape, dtype=np.uint8)
-        mask[walls == WALL_ID] = 255
-        if include_railing:
-            mask[walls == RAILING_ID] = 255
-        cv2.imwrite(split + "test_img.png", walls)
-        # # heatmap_mask = np.zeros(mask.shape) 
+        # # # walls = house.walls
+        # mask = np.zeros(walls.shape, dtype=np.uint8)
+        # mask[walls == WALL_ID] = 255
+        # if include_railing:
+        #     mask[walls == RAILING_ID] = 255
+        # cv2.imwrite(split + "test_img.png", walls)
+        # heatmap_mask = np.zeros(mask.shape) 
 
         # f_mask = os.path.join(mask_path, str(idx) + ".png")
         # cv2.imwrite(f_mask, mask)
