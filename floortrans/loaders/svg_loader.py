@@ -100,7 +100,6 @@ class FloorplanSVG(Dataset):
     def fix_heatmaps(self, heatmaps, roi, height, width):
         xmin, ymin, w, h = roi
         xmax, ymax = xmin + w, ymin + h
-        print("x min: ", xmin, "x max: ", xmax, "ymin: ", ymin,"ymax: ",  ymax)
 
 
         for heatmap in heatmaps:
