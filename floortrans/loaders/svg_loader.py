@@ -70,10 +70,12 @@ class FloorplanSVG(Dataset):
         house = House(self.data_folder + self.folders[index] + self.svg_file_name, height, width, roi)
         # Combining them to one numpy tensor
         label = torch.tensor(house.get_segmentation_tensor().astype(np.float32))
+        
         heatmaps = house.get_heatmap_dict()
 
         coef_width = 1
         if self.original_size:
+            print("--------------------------original_size---------------------------------")
             fplan = cv2.imread(self.data_folder + self.folders[index] + self.org_image_file_name)
             fplan = cv2.cvtColor(fplan, cv2.COLOR_BGR2RGB)  # correct color channels
             height_org, width_org, nchannel = fplan.shape

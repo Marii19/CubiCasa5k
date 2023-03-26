@@ -156,12 +156,12 @@ def train(args, log_dir, writer, logger):
 
             file_path_image = os.path.join(out_numpy_dir, "image.npy")
             with open(file_path_image, "w") as f:
-                np.save(f, images)
+                np.save(f, images.cpu())
 
 
             file_path_label = os.path.join(out_numpy_dir, "label.npy")
             with open(file_path_label, "w") as f:
-                np.save(f, labels)
+                np.save(f, labels.cpu())
                 
 
             outputs = model(images)

@@ -50,7 +50,7 @@ def process_split(out_path, data_path, split, include_railing=True, verbose=True
         house = example['house']
 
         heatmaps = example["heatmaps"]
-        tensor = house.get_tensor()
+        tensor = house.get_segmentation_tensor()
         walls = tensor[-2]
 
         heatmaps_mask = np.zeros(walls.shape)
