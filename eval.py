@@ -43,7 +43,7 @@ def print_res(name, res, cls_names, logger):
 
 def evaluate(args, log_dir, writer, logger):
 
-    normal_set = FloorplanSVG(args.data_path, 'test.txt', format='txt', lmdb_folder='cubi_lmdb/', augmentations=Compose([DictToTensor()]))
+    normal_set = FloorplanSVG(args.data_path, 'test.txt', 'test.json', format='txt', lmdb_folder='cubi_lmdb/', augmentations=Compose([DictToTensor()]))
     data_loader = data.DataLoader(normal_set, batch_size=1, num_workers=0)
 
     checkpoint = torch.load(args.weights)
