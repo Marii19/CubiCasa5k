@@ -151,6 +151,8 @@ def train(args, log_dir, writer, logger):
                                ncols=80, leave=False):
             images = samples['image'].cuda(non_blocking=True)
             labels = samples['label'].cuda(non_blocking=True)
+            print("LABELS TYPE: ", type(labels.cpu()))
+            print("LABELS: ", labels.cpu())
             out_numpy_dir = os.path.join(log_dir, str(i))
             os.makedirs(out_numpy_dir, exist_ok=True)
 
