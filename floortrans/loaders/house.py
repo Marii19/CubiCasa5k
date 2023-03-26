@@ -622,10 +622,12 @@ class House:
 
     def get_tensor(self):
         heatmaps = self.get_heatmaps()
+        
         wall_t = self.walls
         icon_t = self.icons
         xmin, ymin, w, h = self.roi
         xmax, ymax = xmin + w, ymin + h
+
         wall_t = wall_t[ymin:ymax, xmin:xmax]
         icon_t = icon_t[ymin:ymax, xmin:xmax]
 
@@ -641,10 +643,11 @@ class House:
         icon_t = self.icons
         xmin, ymin, w, h = self.roi
         xmax, ymax = xmin + w, ymin + h
+
         wall_t = wall_t[ymin:ymax, xmin:xmax]
         icon_t = icon_t[ymin:ymax, xmin:xmax]
-        wall_t = np.expand_dims(wall_t, axis=0)
 
+        wall_t = np.expand_dims(wall_t, axis=0)
         icon_t = np.expand_dims(icon_t, axis=0)
         tensor = np.concatenate((wall_t, icon_t), axis=0)
 

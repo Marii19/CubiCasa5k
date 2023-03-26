@@ -151,6 +151,18 @@ def train(args, log_dir, writer, logger):
                                ncols=80, leave=False):
             images = samples['image'].cuda(non_blocking=True)
             labels = samples['label'].cuda(non_blocking=True)
+            out_numpy_dir = os.path.join(log_dir, str(i))
+            os.makedirs(out_numpy_dir, exist_ok=True)
+
+            file_path_image = os.path.join(out_numpy_dir, "image.npy")
+            with open(file_path_image, "w") as f:
+                np.save(f, images)
+
+
+            file_path_label = os.path.join(out_numpy_dir, "label.npy")
+            with open(file_path_label, "w") as f:
+                np.save(f, labels)
+                
 
             outputs = model(images)
 
@@ -189,8 +201,10 @@ def train(args, log_dir, writer, logger):
         total_px = 0
         for i_val, samples_val in tqdm(enumerate(valloader), total=len(valloader), ncols=80, leave=False):
             with torch.no_grad():
+                
                 images_val = samples_val['image'].cuda(non_blocking=True)
                 labels_val = samples_val['label'].cuda(non_blocking=True)
+
 
                 outputs = model(images_val)
                 labels_val = F.interpolate(labels_val, size=outputs.shape[2:], mode='bilinear', align_corners=False)
